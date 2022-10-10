@@ -20,8 +20,7 @@ import java.nio.charset.StandardCharsets;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-  @Value("${jwt.secret:168103c42617e261dece4ea61a68190df5656a7c8604ba646088436b33804bc9}")
+  @Value("${jwt.secret:c9d0799fa21962386d69fb20f40a8fd5e9bfea4ae07de0aa55e262a0f46f96a0}")
   private String jwtSecret;
 
   @Bean
