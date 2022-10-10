@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +27,6 @@ import designer.server.utils.WerkzeugPwdEncoder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -39,11 +39,10 @@ public class UserController {
   @Autowired
   private UserService userService;
 
-  @Operation(summary = "获取用户信息", security = { @SecurityRequirement(name = "Authorization") })
-  @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-  public ResponseDTO<User> getUser(@PathVariable(name = "id") @Parameter(description = "用户ID") String id) {
-    User user = userService.getById(id);
-
+  @Operation(summary = "获取当前登录用户信息", security = { @SecurityRequirement(name = "Authorization") })
+  @RequestMapping(value = "", method = RequestMethod.GET)
+  public ResponseDTO<User> getUser(UsernamePasswordAuthenticationToken token) {
+    User user = userService.getById(token.getName());
     return ResponseDTO.success(user);
   }
 
