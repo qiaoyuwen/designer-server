@@ -2,21 +2,24 @@ package designer.server.controller;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import designer.server.dto.base.PaginationData;
 import designer.server.dto.base.ResponseDTO;
 import designer.server.dto.request.LoginDTO;
 import designer.server.pojo.User;
@@ -70,5 +73,28 @@ public class UserController {
     // 认证失败
     log.info("user {} login failed", params.getUsername());
     return ResponseDTO.failed("用户名密码错误");
+  }
+
+  @Operation(summary = "获取用户分页列表", security = { @SecurityRequirement(name = "Authorization") })
+  @RequestMapping(value = "/pagination", method = RequestMethod.GET)
+  public ResponseDTO<PaginationData<User>> pagination(@RequestParam(name = "current") Integer current,
+      @RequestParam(name = "pageSize") Integer pageSize,
+      @Nullable @RequestParam(name = "username") String username) {
+    String sql = "limit " + (current - 1) * pageSize + "," + pageSize;
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    if (username != null) {
+      queryWrapper.like("name", username);
+    }
+    int total = userService.count(queryWrapper);
+    queryWrapper.last(sql);
+    List<User> userList = userService.list(queryWrapper);
+
+    PaginationData<User> paginationData = new PaginationData<User>();
+    paginationData.setCurrent(current);
+    paginationData.setPageSize(pageSize);
+    paginationData.setTotal(total);
+    paginationData.setList(userList);
+
+    return ResponseDTO.pagination(paginationData);
   }
 }
