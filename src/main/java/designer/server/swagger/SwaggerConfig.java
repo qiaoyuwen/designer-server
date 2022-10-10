@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
 @Configuration
 @OpenAPIDefinition(info = @Info(title = "Designer", version = "1.0", description = "Designer Api 文档"), externalDocs = @ExternalDocumentation(description = "springdoc文档地址", url = "https://springdoc.org/#getting-started"))
-@SecurityScheme(type = SecuritySchemeType.HTTP, name = "JWT", scheme = "bearer", in = SecuritySchemeIn.HEADER)
+@SecurityScheme(type = SecuritySchemeType.HTTP, name = "Authorization", scheme = "bearer", in = SecuritySchemeIn.HEADER, description = "授权token")
 public class SwaggerConfig {
   @Bean
   public GroupedOpenApi backendApi() {
