@@ -83,7 +83,7 @@ public class UserController {
     String sql = "limit " + (current - 1) * pageSize + "," + pageSize;
     QueryWrapper<User> queryWrapper = new QueryWrapper<>();
     if (username != null) {
-      queryWrapper.like("name", username);
+      queryWrapper.like("username", username);
     }
     int total = userService.count(queryWrapper);
     queryWrapper.last(sql);

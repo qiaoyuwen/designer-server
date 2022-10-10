@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
@@ -17,30 +15,23 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@TableName(value = "user")
-public class User {
-  @Schema(description = "用户ID")
+@TableName(value = "project")
+public class Project {
+  @Schema(description = "项目ID")
   @TableId(type = IdType.ASSIGN_UUID)
   private String id;
 
-  @Schema(description = "用户名")
-  private String username;
+  @Schema(description = "项目名")
+  private String name;
 
-  @Schema(description = "密码")
-  private String password;
+  @Schema(description = "项目描述")
+  private String description;
 
-  @Schema(description = "创建时间")
+  @Schema(description = "创建事件")
   @JsonSerialize(using = LocalDateTimeSerializer.class)
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime ctime;
 
-  @JsonIgnore
-  public String getPassword() {
-    return password;
-  }
-
-  @JsonProperty
-  public void setPassword(String password) {
-    this.password = password;
-  }
+  @Schema(description = "是否已删除  0: 未删除, 1: 已删除")
+  private Integer deleted;
 }
