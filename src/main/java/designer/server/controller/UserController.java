@@ -18,7 +18,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import designer.server.dto.base.ResponseDTO;
 import designer.server.dto.request.LoginDTO;
-import designer.server.http.StatusMessage;
 import designer.server.pojo.User;
 import designer.server.security.SecurityConfig;
 import designer.server.service.UserService;
@@ -45,10 +44,10 @@ public class UserController {
   public ResponseDTO<User> getUser(@PathVariable(name = "id") @Parameter(description = "用户ID") String id) {
     User user = userService.getById(id);
 
-    return new ResponseDTO<>(user);
+    return ResponseDTO.success(user);
   }
 
-  @Operation(summary = "管理平台登录")
+  @Operation(summary = "登录")
   @RequestMapping(value = "/login", method = RequestMethod.POST)
   public ResponseDTO<Void> login(@Valid @RequestBody LoginDTO params, HttpServletResponse response) throws IOException {
     log.info("user {} try to login", params.getUsername());
@@ -66,11 +65,11 @@ public class UserController {
             .compact();
         response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
         log.info("user {} login succeed", params.getUsername());
-        return new ResponseDTO<Void>();
+        return ResponseDTO.success();
       }
     }
     // 认证失败
     log.info("user {} login failed", params.getUsername());
-    return new ResponseDTO<Void>(StatusMessage.LOGINERROR);
+    return ResponseDTO.failed("用户名密码错误");
   }
 }
