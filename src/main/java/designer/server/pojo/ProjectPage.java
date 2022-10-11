@@ -15,22 +15,28 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@TableName(value = "project")
-public class Project {
-  @Schema(description = "项目ID")
+@TableName(value = "project_page")
+public class ProjectPage {
+  @Schema(description = "页面ID")
   @TableId(type = IdType.ASSIGN_UUID)
   private String id;
 
-  @Schema(description = "项目名")
+  @Schema(description = "页面名称")
   private String name;
 
-  @Schema(description = "项目描述")
+  @Schema(description = "页面描述")
   private String description;
 
   @Schema(description = "创建时间")
   @JsonSerialize(using = LocalDateTimeSerializer.class)
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime ctime;
+
+  @Schema(description = "页面 schema json")
+  private String schemaJson;
+
+  @Schema(description = "上线状态, 0: 未上线, 1: 已上线")
+  private Integer status;
 
   @Schema(description = "是否已删除  0: 未删除, 1: 已删除")
   private Integer deleted;

@@ -17,7 +17,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import designer.server.dto.base.PaginationData;
 import designer.server.dto.base.ResponseDTO;
-import designer.server.dto.request.project.AddOrUpdateProjectDTO;
+import designer.server.dto.request.AddOrUpdateProjectDTO;
 import designer.server.pojo.Project;
 import designer.server.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,13 +44,13 @@ public class ProjectController {
     queryWrapper.eq("deleted", 0);
     int total = projectService.count(queryWrapper);
     queryWrapper.last(sql);
-    List<Project> userList = projectService.list(queryWrapper);
+    List<Project> projects = projectService.list(queryWrapper);
 
     PaginationData<Project> paginationData = new PaginationData<>();
     paginationData.setCurrent(current);
     paginationData.setPageSize(pageSize);
     paginationData.setTotal(total);
-    paginationData.setList(userList);
+    paginationData.setList(projects);
 
     return ResponseDTO.pagination(paginationData);
   }
@@ -95,8 +95,13 @@ public class ProjectController {
       }
     }
 
-    project.setName(params.getName());
-    project.setDescription(params.getDescription());
+    if (params.getName() != null) {
+      project.setName(params.getName());
+    }
+
+    if (params.getDescription() != null) {
+      project.setDescription(params.getDescription());
+    }
 
     projectService.saveOrUpdate(project);
     return ResponseDTO.success();

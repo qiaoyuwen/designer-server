@@ -30,6 +30,7 @@ import designer.server.utils.WerkzeugPwdEncoder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -77,9 +78,10 @@ public class UserController {
 
   @Operation(summary = "查询用户分页列表", security = { @SecurityRequirement(name = "Authorization") })
   @RequestMapping(value = "/pagination", method = RequestMethod.GET)
-  public ResponseDTO<PaginationData<User>> pagination(@RequestParam(name = "current") Integer current,
-      @RequestParam(name = "pageSize") Integer pageSize,
-      @Nullable @RequestParam(name = "username") String username) {
+  public ResponseDTO<PaginationData<User>> pagination(
+      @RequestParam(name = "current") @Parameter(description = "当前页数") Integer current,
+      @RequestParam(name = "pageSize") @Parameter(description = "每页条数") Integer pageSize,
+      @Nullable @RequestParam(name = "username") @Parameter(description = "用户名") String username) {
     String sql = "limit " + (current - 1) * pageSize + "," + pageSize;
     QueryWrapper<User> queryWrapper = new QueryWrapper<>();
     if (username != null) {
