@@ -2,8 +2,12 @@ package designer.server.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,6 +17,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import designer.server.dto.base.PaginationData;
 import designer.server.dto.base.ResponseDTO;
+import designer.server.dto.request.project.AddOrUpdateProjectDTO;
 import designer.server.pojo.Project;
 import designer.server.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +31,7 @@ public class ProjectController {
   @Autowired
   private ProjectService projectService;
 
-  @Operation(summary = "获取项目分页列表", security = { @SecurityRequirement(name = "Authorization") })
+  @Operation(summary = "查询项目分页列表", security = { @SecurityRequirement(name = "Authorization") })
   @RequestMapping(value = "/pagination", method = RequestMethod.GET)
   public ResponseDTO<PaginationData<Project>> pagination(@RequestParam(name = "current") Integer current,
       @RequestParam(name = "pageSize") Integer pageSize,
@@ -48,5 +53,52 @@ public class ProjectController {
     paginationData.setList(userList);
 
     return ResponseDTO.pagination(paginationData);
+  }
+
+  @Operation(summary = "查询项目信息", security = { @SecurityRequirement(name = "Authorization") })
+  @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+  public ResponseDTO<Project> getUser(@PathVariable("id") String id) {
+    Project project = projectService.getById(id);
+    return ResponseDTO.success(project);
+  }
+
+  @Operation(summary = "新增项目", security = { @SecurityRequirement(name = "Authorization") })
+  @RequestMapping(value = "", method = RequestMethod.POST)
+  public ResponseDTO<Void> add(@Valid @RequestBody AddOrUpdateProjectDTO params) throws Throwable {
+    return saveOrUpdate(null, params);
+  }
+
+  @Operation(summary = "更新项目", security = { @SecurityRequirement(name = "Authorization") })
+  @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+  public ResponseDTO<Void> update(@PathVariable("id") String id, @Valid @RequestBody AddOrUpdateProjectDTO params)
+      throws Throwable {
+    return saveOrUpdate(id, params);
+  }
+
+  @Operation(summary = "删除项目", security = { @SecurityRequirement(name = "Authorization") })
+  @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+  public ResponseDTO<Void> delete(@PathVariable("id") String id) throws Throwable {
+    Project project = projectService.getById(id);
+    if (project != null) {
+      project.setDeleted(1);
+      projectService.updateById(project);
+    }
+    return ResponseDTO.success();
+  }
+
+  private ResponseDTO<Void> saveOrUpdate(String id, AddOrUpdateProjectDTO params) {
+    Project project = new Project();
+    if (id != null) {
+      project = projectService.getById(id);
+      if (project == null) {
+        return ResponseDTO.failed("非法的项目id");
+      }
+    }
+
+    project.setName(params.getName());
+    project.setDescription(params.getDescription());
+
+    projectService.saveOrUpdate(project);
+    return ResponseDTO.success();
   }
 }

@@ -9,11 +9,11 @@ import javax.validation.constraints.NotEmpty;
 @Getter
 @Setter
 public class LoginDTO {
-    @NotEmpty
-    @Schema(description = "用户名")
-    private String username;
+  @NotEmpty
+  @Schema(description = "用户名")
+  private String username;
 
-    @NotEmpty
-    @Schema(description = "密码")
-    private String password;
+  @NotEmpty
+  @Schema(description = "密码")
+  private String password;
 }

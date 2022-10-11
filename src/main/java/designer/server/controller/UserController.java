@@ -42,7 +42,7 @@ public class UserController {
   @Autowired
   private UserService userService;
 
-  @Operation(summary = "获取当前登录用户信息", security = { @SecurityRequirement(name = "Authorization") })
+  @Operation(summary = "查询当前登录用户信息", security = { @SecurityRequirement(name = "Authorization") })
   @RequestMapping(value = "", method = RequestMethod.GET)
   public ResponseDTO<User> getUser(UsernamePasswordAuthenticationToken token) {
     User user = userService.getById(token.getName());
@@ -75,7 +75,7 @@ public class UserController {
     return ResponseDTO.failed("用户名密码错误");
   }
 
-  @Operation(summary = "获取用户分页列表", security = { @SecurityRequirement(name = "Authorization") })
+  @Operation(summary = "查询用户分页列表", security = { @SecurityRequirement(name = "Authorization") })
   @RequestMapping(value = "/pagination", method = RequestMethod.GET)
   public ResponseDTO<PaginationData<User>> pagination(@RequestParam(name = "current") Integer current,
       @RequestParam(name = "pageSize") Integer pageSize,
