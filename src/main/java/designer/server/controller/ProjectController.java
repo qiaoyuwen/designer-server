@@ -43,6 +43,8 @@ public class ProjectController {
     }
     queryWrapper.eq("deleted", 0);
     int total = projectService.count(queryWrapper);
+
+    queryWrapper.orderByDesc("ctime");
     queryWrapper.last(sql);
     List<Project> projects = projectService.list(queryWrapper);
 

@@ -88,6 +88,8 @@ public class UserController {
       queryWrapper.like("username", username);
     }
     int total = userService.count(queryWrapper);
+
+    queryWrapper.orderByDesc("ctime");
     queryWrapper.last(sql);
     List<User> userList = userService.list(queryWrapper);
 

@@ -45,6 +45,8 @@ public class ProjectPageController {
     }
     queryWrapper.eq("deleted", 0);
     int total = projectPageService.count(queryWrapper);
+
+    queryWrapper.orderByDesc("ctime");
     queryWrapper.last(sql);
     List<ProjectPage> projectPages = projectPageService.list(queryWrapper);
 
