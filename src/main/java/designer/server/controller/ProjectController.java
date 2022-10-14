@@ -21,6 +21,7 @@ import designer.server.dto.request.AddOrUpdateProjectDTO;
 import designer.server.pojo.Project;
 import designer.server.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
@@ -33,19 +34,26 @@ public class ProjectController {
 
   @Operation(summary = "查询项目分页列表", security = { @SecurityRequirement(name = "Authorization") })
   @RequestMapping(value = "/pagination", method = RequestMethod.GET)
-  public ResponseDTO<PaginationData<Project>> pagination(@RequestParam(name = "current") Integer current,
-      @RequestParam(name = "pageSize") Integer pageSize,
-      @Nullable @RequestParam(name = "name") String name) {
+  public ResponseDTO<PaginationData<Project>> pagination(
+      @RequestParam(name = "current") @Parameter(description = "当前页数") Integer current,
+      @RequestParam(name = "pageSize") @Parameter(description = "每页条数") Integer pageSize,
+      @Nullable @RequestParam(name = "name") @Parameter(description = "项目名") String name,
+      @Nullable @RequestParam(name = "ctime") @Parameter(description = "创建时间") String[] ctimes) {
     String sql = "limit " + (current - 1) * pageSize + "," + pageSize;
     QueryWrapper<Project> queryWrapper = new QueryWrapper<>();
     if (name != null) {
       queryWrapper.like("name", name);
+    }
+
+    if (ctimes != null && ctimes.length == 2) {
+      queryWrapper.between("ctime", ctimes[0] + " 00:00:00", ctimes[1] + " 23:59:59");
     }
     queryWrapper.eq("deleted", 0);
     int total = projectService.count(queryWrapper);
 
     queryWrapper.orderByDesc("ctime");
     queryWrapper.last(sql);
+
     List<Project> projects = projectService.list(queryWrapper);
 
     PaginationData<Project> paginationData = new PaginationData<>();
