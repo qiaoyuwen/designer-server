@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="designer.server.mapper.ProjectPageMapper">
+  <resultMap id="ProjectPageResultMap" type="ProjectPage">
+    <id column="id" property="id"></id>
+    <result column="name" property="name"></result>
+    <result column="description" property="description"></result>
+    <result column="ctime" property="ctime"></result>
+    <result column="schema_json" property="schemaJson"></result>
+    <result column="status" property="status"></result>
+    <result column="deleted" property="deleted"></result>
+    <association property="project" javaType="Project">
+      <id column="p_id" property="id"></id>
+      <result column="p_name" property="name"></result>
+      <result column="p_description" property="description"></result>
+      <result column="p_ctime" property="ctime"></result>
+      <result column="p_deleted" property="deleted"></result>
+    </association>
+  </resultMap>
+  <select id="getPagination" resultMap="ProjectPageResultMap">
+      select pp.id id, pp.name name, pp.description description, pp.ctime ctime, pp.schema_json schema_json, pp.status status, pp.deleted deleted,
+      p.id p_id, p.name p_name, p.description p_description, p.ctime p_ctime, p.deleted p_deleted
+      from `project_page` as pp left join `project` as p on pp.project_id=p.id
+      ${ew.customSqlSegment}
+  </select>
+</mapper>

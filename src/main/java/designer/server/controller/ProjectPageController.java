@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import designer.server.dto.base.PaginationData;
@@ -43,11 +44,10 @@ public class ProjectPageController {
       @Nullable @RequestParam(name = "name") @Parameter(description = "页面名称") String name) {
     QueryWrapper<ProjectPage> queryWrapper = new QueryWrapper<>();
     if (name != null) {
-      queryWrapper.like("name", name);
+      queryWrapper.like("pp.name", name);
     }
-    queryWrapper.orderByDesc("ctime");
-    Page<ProjectPage> result = projectPageMapper.selectPage(new Page<>(current, pageSize), queryWrapper);
-
+    queryWrapper.orderByDesc("pp.ctime");
+    IPage<ProjectPage> result = projectPageMapper.getPagination(new Page<>(current, pageSize), queryWrapper);
     return ResponseDTO.pagination(PaginationData.createData(result));
   }
 
