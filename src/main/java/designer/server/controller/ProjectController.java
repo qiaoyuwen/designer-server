@@ -1,7 +1,5 @@
 package designer.server.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import designer.server.dto.base.PaginationData;
 import designer.server.dto.base.ResponseDTO;
 import designer.server.dto.request.AddOrUpdateProjectDTO;
+import designer.server.mapper.ProjectMapper;
 import designer.server.pojo.Project;
 import designer.server.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +32,9 @@ public class ProjectController {
   @Autowired
   private ProjectService projectService;
 
+  @Autowired
+  private ProjectMapper projectMapper;
+
   @Operation(summary = "查询项目分页列表", security = { @SecurityRequirement(name = "Authorization") })
   @RequestMapping(value = "/pagination", method = RequestMethod.GET)
   public ResponseDTO<PaginationData<Project>> pagination(
@@ -39,30 +42,17 @@ public class ProjectController {
       @RequestParam(name = "pageSize") @Parameter(description = "每页条数") Integer pageSize,
       @Nullable @RequestParam(name = "name") @Parameter(description = "项目名") String name,
       @Nullable @RequestParam(name = "ctime") @Parameter(description = "创建时间") String[] ctimes) {
-    String sql = "limit " + (current - 1) * pageSize + "," + pageSize;
     QueryWrapper<Project> queryWrapper = new QueryWrapper<>();
     if (name != null) {
       queryWrapper.like("name", name);
     }
-
     if (ctimes != null && ctimes.length == 2) {
       queryWrapper.between("ctime", ctimes[0] + " 00:00:00", ctimes[1] + " 23:59:59");
     }
-    queryWrapper.eq("deleted", 0);
-    int total = projectService.count(queryWrapper);
-
     queryWrapper.orderByDesc("ctime");
-    queryWrapper.last(sql);
+    Page<Project> result = projectMapper.selectPage(new Page<>(current, pageSize), queryWrapper);
 
-    List<Project> projects = projectService.list(queryWrapper);
-
-    PaginationData<Project> paginationData = new PaginationData<>();
-    paginationData.setCurrent(current);
-    paginationData.setPageSize(pageSize);
-    paginationData.setTotal(total);
-    paginationData.setList(projects);
-
-    return ResponseDTO.pagination(paginationData);
+    return ResponseDTO.pagination(PaginationData.createData(result));
   }
 
   @Operation(summary = "查询项目信息", security = { @SecurityRequirement(name = "Authorization") })
@@ -85,14 +75,10 @@ public class ProjectController {
     return saveOrUpdate(id, params);
   }
 
-  @Operation(summary = "删除项目", security = { @SecurityRequirement(name = "Authorization") })
+  @Operation(summary = "逻辑删除项目", security = { @SecurityRequirement(name = "Authorization") })
   @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
   public ResponseDTO<Void> delete(@PathVariable("id") String id) throws Throwable {
-    Project project = projectService.getById(id);
-    if (project != null) {
-      project.setDeleted(1);
-      projectService.updateById(project);
-    }
+    projectService.removeById(id);
     return ResponseDTO.success();
   }
 

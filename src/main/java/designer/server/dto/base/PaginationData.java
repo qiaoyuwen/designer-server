@@ -1,6 +1,9 @@
 package designer.server.dto.base;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,9 +12,18 @@ import lombok.Setter;
 public class PaginationData<T> {
   private List<T> list;
 
-  private int current;
+  private long current;
 
-  private int pageSize;
+  private long pageSize;
 
-  private int total;
+  private long total;
+
+  public static <T> PaginationData<T> createData(Page<T> page) {
+    PaginationData<T> data = new PaginationData<>();
+    data.setCurrent(page.getCurrent());
+    data.setPageSize(page.getSize());
+    data.setTotal(page.getTotal());
+    data.setList(page.getRecords());
+    return data;
+  }
 }

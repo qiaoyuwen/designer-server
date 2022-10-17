@@ -2,6 +2,7 @@ package designer.server.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -39,5 +40,6 @@ public class ProjectPage {
   private Integer status;
 
   @Schema(description = "是否已删除  0: 未删除, 1: 已删除")
+  @TableLogic
   private Integer deleted;
 }

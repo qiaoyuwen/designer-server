@@ -2,7 +2,6 @@ package designer.server.controller;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -18,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import designer.server.dto.base.PaginationData;
 import designer.server.dto.base.ResponseDTO;
 import designer.server.dto.request.LoginDTO;
+import designer.server.mapper.UserMapper;
 import designer.server.pojo.User;
 import designer.server.security.SecurityConfig;
 import designer.server.service.UserService;
@@ -42,6 +43,9 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
   @Autowired
   private UserService userService;
+
+  @Autowired
+  private UserMapper userMapper;
 
   @Operation(summary = "查询当前登录用户信息", security = { @SecurityRequirement(name = "Authorization") })
   @RequestMapping(value = "", method = RequestMethod.GET)
@@ -82,23 +86,13 @@ public class UserController {
       @RequestParam(name = "current") @Parameter(description = "当前页数") Integer current,
       @RequestParam(name = "pageSize") @Parameter(description = "每页条数") Integer pageSize,
       @Nullable @RequestParam(name = "username") @Parameter(description = "用户名") String username) {
-    String sql = "limit " + (current - 1) * pageSize + "," + pageSize;
     QueryWrapper<User> queryWrapper = new QueryWrapper<>();
     if (username != null) {
       queryWrapper.like("username", username);
     }
-    int total = userService.count(queryWrapper);
-
     queryWrapper.orderByDesc("ctime");
-    queryWrapper.last(sql);
-    List<User> userList = userService.list(queryWrapper);
+    Page<User> result = userMapper.selectPage(new Page<>(current, pageSize), queryWrapper);
 
-    PaginationData<User> paginationData = new PaginationData<User>();
-    paginationData.setCurrent(current);
-    paginationData.setPageSize(pageSize);
-    paginationData.setTotal(total);
-    paginationData.setList(userList);
-
-    return ResponseDTO.pagination(paginationData);
+    return ResponseDTO.pagination(PaginationData.createData(result));
   }
 }
