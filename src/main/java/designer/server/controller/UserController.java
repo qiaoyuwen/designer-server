@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +22,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import designer.server.dto.base.PaginationData;
 import designer.server.dto.base.ResponseDTO;
+import designer.server.dto.request.AddUserDTO;
 import designer.server.dto.request.LoginDTO;
 import designer.server.mapper.UserMapper;
 import designer.server.pojo.User;
@@ -94,5 +96,34 @@ public class UserController {
     Page<User> result = userMapper.selectPage(new Page<>(current, pageSize), queryWrapper);
 
     return ResponseDTO.pagination(PaginationData.createData(result));
+  }
+
+  @Operation(summary = "新增用户", security = { @SecurityRequirement(name = "Authorization") })
+  @RequestMapping(value = "", method = RequestMethod.POST)
+  public ResponseDTO<Void> add(UsernamePasswordAuthenticationToken token, @Valid @RequestBody AddUserDTO params)
+      throws Throwable {
+    User loginedUser = userService.getById(token.getName());
+    if (!loginedUser.isRoot()) {
+      return ResponseDTO.failed("非超级管理员");
+    }
+
+    User user = new User();
+    user.setUsername(params.getUsername());
+    WerkzeugPwdEncoder passwordEncoder = SpringContext.getBean(WerkzeugPwdEncoder.class);
+    user.setPassword(passwordEncoder.encode("123456"));
+    userService.save(user);
+    return ResponseDTO.success();
+  }
+
+  @Operation(summary = "逻辑删除用户", security = { @SecurityRequirement(name = "Authorization") })
+  @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+  public ResponseDTO<Void> delete(UsernamePasswordAuthenticationToken token, @PathVariable("id") String id)
+      throws Throwable {
+    User loginedUser = userService.getById(token.getName());
+    if (!loginedUser.isRoot()) {
+      return ResponseDTO.failed("非超级管理员");
+    }
+    userService.removeById(id);
+    return ResponseDTO.success();
   }
 }

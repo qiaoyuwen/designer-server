@@ -7,9 +7,29 @@ CREATE TABLE `user` (
   `username` varchar(32) NOT NULL COMMENT '用户名',
   `password` varchar(128) NOT NULL COMMENT '密码',
   `ctime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `is_root` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '是否为超级管理员, 0: 否, 1: 是',
+  `deleted` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '是否删除, 0: 未删除, 1: 删除',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `username` (`username`)
 )COMMENT '用户表';
+
+CREATE TABLE `role` (
+  `id` varchar(32) NOT NULL COMMENT '角色ID',
+  `name` varchar(32) NOT NULL COMMENT '角色名',
+  `description` varchar(255) NOT NULL DEFAULT '' COMMENT '角色描述',
+  `ctime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `permission` LONGTEXT COMMENT '角色权限',
+  `deleted` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '是否删除, 0: 未删除, 1: 删除',
+  PRIMARY KEY (`id`)
+)COMMENT '角色表';
+
+CREATE TABLE `user_role` (
+  `id` varchar(32) NOT NULL COMMENT '用户角色ID',
+  `user_id` varchar(32) NOT NULL COMMENT '用户ID',
+  `role_id` varchar(32) NOT NULL COMMENT '角色ID',
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `user_role` (`user_id`, `role_id`)
+)COMMENT '用户角色表';
 
 CREATE TABLE `project` (
   `id` varchar(32) NOT NULL COMMENT '项目ID',
