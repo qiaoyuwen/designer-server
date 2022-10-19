@@ -1,5 +1,7 @@
 package designer.server.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,20 @@ public class ProjectController {
     Page<Project> result = projectMapper.selectPage(new Page<>(current, pageSize), queryWrapper);
 
     return ResponseDTO.pagination(PaginationData.createData(result));
+  }
+
+  @Operation(summary = "查询项目列表", security = { @SecurityRequirement(name = "Authorization") })
+  @RequestMapping(value = "", method = RequestMethod.GET)
+  public ResponseDTO<List<Project>> getList(
+      @Nullable @RequestParam(name = "name") @Parameter(description = "项目名") String name) {
+    QueryWrapper<Project> queryWrapper = new QueryWrapper<>();
+    if (name != null) {
+      queryWrapper.like("name", name);
+    }
+
+    List<Project> projects = projectService.list(queryWrapper);
+
+    return ResponseDTO.success(projects);
   }
 
   @Operation(summary = "查询项目信息", security = { @SecurityRequirement(name = "Authorization") })

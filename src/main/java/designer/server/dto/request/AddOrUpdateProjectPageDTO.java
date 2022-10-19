@@ -16,6 +16,9 @@ public class AddOrUpdateProjectPageDTO {
   @Schema(description = "页面schema json")
   private String schemaJson;
 
+  @Schema(description = "项目id")
+  private String projectId;
+
   @Schema(description = "上线状态, 0: 未上线, 1: 已上线")
   private Integer status;
 }

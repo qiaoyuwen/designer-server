@@ -96,6 +96,10 @@ public class ProjectPageController {
       projectPage.setDescription(params.getDescription());
     }
 
+    if (params.getProjectId() != null) {
+      projectPage.setProjectId(params.getProjectId());
+    }
+
     if (params.getSchemaJson() != null) {
       projectPage.setSchemaJson(params.getSchemaJson());
     }

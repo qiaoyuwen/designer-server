@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
@@ -34,6 +36,9 @@ public class ProjectPage {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime ctime;
 
+  @Schema(description = "项目id")
+  private String projectId;
+
   @Schema(description = "页面 schema json")
   private String schemaJson;
 
@@ -46,4 +51,14 @@ public class ProjectPage {
 
   @TableField(exist = false)
   private Project project;
+
+  @JsonIgnore
+  public String getProjectId() {
+    return this.projectId;
+  }
+
+  @JsonProperty
+  public void setProjectId(String projectId) {
+    this.projectId = projectId;
+  }
 }
