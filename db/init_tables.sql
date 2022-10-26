@@ -35,6 +35,7 @@ CREATE TABLE `project` (
   `id` varchar(32) NOT NULL COMMENT '项目ID',
   `name` varchar(32) NOT NULL COMMENT '项目名',
   `description` varchar(255) NOT NULL DEFAULT '' COMMENT '项目描述',
+  `menu_config` LONGTEXT COMMENT '项目菜单配置',
   `ctime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `deleted` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '是否删除, 0: 未删除, 1: 删除',
   PRIMARY KEY (`id`)

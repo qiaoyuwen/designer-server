@@ -12,4 +12,7 @@ public class AddOrUpdateProjectDTO {
 
   @Schema(description = "项目描述")
   private String description;
+
+  @Schema(description = "项目菜单配置")
+  private String menuConfig;
 }

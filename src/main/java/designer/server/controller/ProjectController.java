@@ -73,7 +73,7 @@ public class ProjectController {
 
   @Operation(summary = "查询项目信息", security = { @SecurityRequirement(name = "Authorization") })
   @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-  public ResponseDTO<Project> getUser(@PathVariable("id") String id) {
+  public ResponseDTO<Project> getProject(@PathVariable("id") String id) {
     Project project = projectService.getById(id);
     return ResponseDTO.success(project);
   }
@@ -113,6 +113,10 @@ public class ProjectController {
 
     if (params.getDescription() != null) {
       project.setDescription(params.getDescription());
+    }
+
+    if (params.getMenuConfig() != null) {
+      project.setMenuConfig(params.getMenuConfig());
     }
 
     projectService.saveOrUpdate(project);
