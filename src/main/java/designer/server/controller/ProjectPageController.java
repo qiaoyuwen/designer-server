@@ -46,11 +46,16 @@ public class ProjectPageController {
   public ResponseDTO<PaginationData<ProjectPage>> pagination(
       @RequestParam(name = "current") @Parameter(description = "当前页数") Integer current,
       @RequestParam(name = "pageSize") @Parameter(description = "每页条数") Integer pageSize,
-      @Nullable @RequestParam(name = "name") @Parameter(description = "页面名称") String name) {
+      @Nullable @RequestParam(name = "name") @Parameter(description = "页面名称") String name,
+      @Nullable @RequestParam(name = "projectId") @Parameter(description = "项目ID") String projectId) {
     QueryWrapper<ProjectPage> queryWrapper = new QueryWrapper<>();
     if (name != null) {
       queryWrapper.like("pp.name", name);
     }
+    if (projectId != null) {
+      queryWrapper.eq("p.id", projectId);
+    }
+    queryWrapper.eq("pp.deleted", 0);
     queryWrapper.orderByDesc("pp.ctime");
     IPage<ProjectPage> result = projectPageMapper.getPagination(new Page<>(current, pageSize), queryWrapper);
     return ResponseDTO.pagination(PaginationData.createData(result));
