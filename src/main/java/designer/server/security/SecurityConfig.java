@@ -41,7 +41,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/user/login",
             "/project",
             "/project/**",
-            "/project_page/**")
+            "/project_page/**",
+            "/user",
+            "/user/**",
+            "/role",
+            "/role/**")
         .permitAll()
         .anyRequest().authenticated()
         .and()

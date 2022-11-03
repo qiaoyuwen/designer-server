@@ -1,5 +1,7 @@
 package designer.server.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import designer.server.dto.request.AddOrUpdateProjectPageDTO;
 import designer.server.mapper.ProjectPageMapper;
 import designer.server.pojo.ProjectPage;
 import designer.server.service.ProjectPageService;
+import designer.server.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +33,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @RestController
 @RequestMapping("/project_page")
 public class ProjectPageController {
+  @Autowired
+  private ProjectService projectService;
   @Autowired
   private ProjectPageService projectPageService;
 
@@ -51,10 +56,23 @@ public class ProjectPageController {
     return ResponseDTO.pagination(PaginationData.createData(result));
   }
 
+  @Operation(summary = "查询项目页面列表", security = { @SecurityRequirement(name = "Authorization") })
+  @RequestMapping(value = "", method = RequestMethod.GET)
+  public ResponseDTO<List<ProjectPage>> getList(
+      @RequestParam(name = "projectId") @Parameter(description = "项目ID") String projectId) {
+    QueryWrapper<ProjectPage> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("project_id", projectId);
+
+    List<ProjectPage> projects = projectPageService.list(queryWrapper);
+
+    return ResponseDTO.success(projects);
+  }
+
   @Operation(summary = "查询项目页面信息", security = { @SecurityRequirement(name = "Authorization") })
   @RequestMapping(value = "/{id}", method = RequestMethod.GET)
   public ResponseDTO<ProjectPage> getUser(@PathVariable("id") @Parameter(description = "页面ID") String id) {
     ProjectPage projectpPage = projectPageService.getById(id);
+    projectpPage.setProject(projectService.getById(projectpPage.getProjectId()));
     return ResponseDTO.success(projectpPage);
   }
 
