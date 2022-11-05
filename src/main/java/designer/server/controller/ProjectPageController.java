@@ -83,13 +83,13 @@ public class ProjectPageController {
 
   @Operation(summary = "新增项目页面", security = { @SecurityRequirement(name = "Authorization") })
   @RequestMapping(value = "", method = RequestMethod.POST)
-  public ResponseDTO<Void> add(@Valid @RequestBody AddOrUpdateProjectPageDTO params) throws Throwable {
+  public ResponseDTO<ProjectPage> add(@Valid @RequestBody AddOrUpdateProjectPageDTO params) throws Throwable {
     return saveOrUpdate(null, params);
   }
 
   @Operation(summary = "更新项目页面", security = { @SecurityRequirement(name = "Authorization") })
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-  public ResponseDTO<Void> update(@PathVariable("id") @Parameter(description = "页面ID") String id,
+  public ResponseDTO<ProjectPage> update(@PathVariable("id") @Parameter(description = "页面ID") String id,
       @Valid @RequestBody AddOrUpdateProjectPageDTO params)
       throws Throwable {
     return saveOrUpdate(id, params);
@@ -102,12 +102,12 @@ public class ProjectPageController {
     return ResponseDTO.success();
   }
 
-  private ResponseDTO<Void> saveOrUpdate(String id, AddOrUpdateProjectPageDTO params) {
+  private ResponseDTO<ProjectPage> saveOrUpdate(String id, AddOrUpdateProjectPageDTO params) {
     ProjectPage projectPage = new ProjectPage();
     if (id != null) {
       projectPage = projectPageService.getById(id);
       if (projectPage == null) {
-        return ResponseDTO.failed("非法的项目页面id");
+        return ResponseDTO.failed(projectPage, "非法的项目页面id");
       }
     }
 
@@ -132,6 +132,6 @@ public class ProjectPageController {
     }
 
     projectPageService.saveOrUpdate(projectPage);
-    return ResponseDTO.success();
+    return ResponseDTO.success(projectPage);
   }
 }

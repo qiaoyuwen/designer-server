@@ -80,13 +80,13 @@ public class ProjectController {
 
   @Operation(summary = "新增项目", security = { @SecurityRequirement(name = "Authorization") })
   @RequestMapping(value = "", method = RequestMethod.POST)
-  public ResponseDTO<Void> add(@Valid @RequestBody AddOrUpdateProjectDTO params) throws Throwable {
+  public ResponseDTO<Project> add(@Valid @RequestBody AddOrUpdateProjectDTO params) throws Throwable {
     return saveOrUpdate(null, params);
   }
 
   @Operation(summary = "更新项目", security = { @SecurityRequirement(name = "Authorization") })
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-  public ResponseDTO<Void> update(@PathVariable("id") String id, @Valid @RequestBody AddOrUpdateProjectDTO params)
+  public ResponseDTO<Project> update(@PathVariable("id") String id, @Valid @RequestBody AddOrUpdateProjectDTO params)
       throws Throwable {
     return saveOrUpdate(id, params);
   }
@@ -98,12 +98,12 @@ public class ProjectController {
     return ResponseDTO.success();
   }
 
-  private ResponseDTO<Void> saveOrUpdate(String id, AddOrUpdateProjectDTO params) {
+  private ResponseDTO<Project> saveOrUpdate(String id, AddOrUpdateProjectDTO params) {
     Project project = new Project();
     if (id != null) {
       project = projectService.getById(id);
       if (project == null) {
-        return ResponseDTO.failed("非法的项目id");
+        return ResponseDTO.failed(project, "非法的项目id");
       }
     }
 
@@ -120,6 +120,6 @@ public class ProjectController {
     }
 
     projectService.saveOrUpdate(project);
-    return ResponseDTO.success();
+    return ResponseDTO.success(project);
   }
 }
